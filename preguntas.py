@@ -119,12 +119,22 @@ class ExamenApp:
         self.spin_num_preguntas.delete(0, "end")
         self.spin_num_preguntas.insert(0, "100")
         
-        # Checkbox para aleatorizar
+        # Checkbox para aleatorizar preguntas
         self.var_aleatorio = tk.BooleanVar(value=True)
         tk.Checkbutton(
             frame_config,
             text="Aleatorizar orden de preguntas",
             variable=self.var_aleatorio,
+            font=("Arial", 10),
+            bg="#f0f0f0"
+        ).pack(anchor="w")
+        
+        # Checkbox para mezclar opciones
+        self.var_mezclar_opciones = tk.BooleanVar(value=True)
+        tk.Checkbutton(
+            frame_config,
+            text="Mezclar orden de opciones (A, B, C, D)",
+            variable=self.var_mezclar_opciones,
             font=("Arial", 10),
             bg="#f0f0f0"
         ).pack(anchor="w")
@@ -421,10 +431,51 @@ class ExamenApp:
             random.shuffle(todas_preguntas)
         
         self.preguntas_examen = todas_preguntas[:num_preguntas]
+        
+        # Mezclar opciones si está seleccionado
+        if self.var_mezclar_opciones.get():
+            self._mezclar_opciones_preguntas()
+        
         self.indice_actual = 0
         self.respuestas_usuario = {}
         
         self.mostrar_pregunta()
+    
+    def _mezclar_opciones_preguntas(self):
+        """Mezclar el orden de las opciones en las preguntas tipo test"""
+        letras = ['A', 'B', 'C', 'D', 'E', 'F']
+        
+        for pregunta in self.preguntas_examen:
+            if pregunta.get('tipo') == 'test' and pregunta.get('opciones'):
+                opciones_originales = pregunta['opciones']
+                
+                # Guardar el mapeo original: {letra_original: texto}
+                mapeo_original = {op['letra']: op['texto'] for op in opciones_originales}
+                
+                # Extraer solo los textos y mezclarlos
+                textos = [op['texto'] for op in opciones_originales]
+                random.shuffle(textos)
+                
+                # Crear nuevas opciones con letras en orden pero textos mezclados
+                nuevas_opciones = []
+                mapeo_nuevo = {}  # {letra_nueva: letra_original}
+                
+                for i, texto in enumerate(textos):
+                    letra_nueva = letras[i]
+                    # Encontrar la letra original de este texto
+                    for letra_orig, texto_orig in mapeo_original.items():
+                        if texto_orig == texto:
+                            mapeo_nuevo[letra_nueva] = letra_orig
+                            break
+                    
+                    nuevas_opciones.append({
+                        'letra': letra_nueva,
+                        'texto': texto
+                    })
+                
+                # Actualizar la pregunta
+                pregunta['opciones'] = nuevas_opciones
+                pregunta['mapeo_opciones'] = mapeo_nuevo  # Guardar para referencia
     
     def mostrar_pregunta(self):
         """Mostrar la pregunta actual"""
