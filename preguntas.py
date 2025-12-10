@@ -229,6 +229,33 @@ class ExamenApp:
                 "Los archivos deben llamarse 'Preguntas Tema X.pdf' y 'Respuestas Tema X.pdf'"
             )
     
+    def limpiar_texto_pdf(self, texto):
+        """Eliminar headers, footers y texto basura de los PDFs"""
+        if not texto:
+            return texto
+        
+        # Patrones de texto basura comunes en PDFs (headers/footers)
+        patrones_basura = [
+            # Formato: "Internet y Negocio Electrónico, 202 5-2026 Tema X - Preguntas/Respuestas"
+            r'Internet\s+y\s+Negocio\s+Electr[óo]nico[,.]?\s*\d*\s*\d*[-–]\d*\s*Tema\s*\d+\s*[-–]?\s*(Preguntas|Respuestas)?',
+            # Números de página sueltos
+            r'\b\d+\s*$',
+            # Otros patrones de encabezado/pie de página comunes
+            r'Tema\s+\d+\s*[-–]\s*(Preguntas|Respuestas)',
+            r'P[áa]gina\s+\d+\s*(de\s+\d+)?',
+            # Texto tipo "202 5-2026" (año partido)
+            r'\b20\d\s+\d[-–]\d{4}\b',
+        ]
+        
+        resultado = texto
+        for patron in patrones_basura:
+            resultado = re.sub(patron, '', resultado, flags=re.IGNORECASE)
+        
+        # Limpiar espacios extras resultantes
+        resultado = re.sub(r'\s+', ' ', resultado).strip()
+        
+        return resultado
+    
     def extraer_preguntas_pdf(self, ruta_pdf):
         """Extraer preguntas del PDF"""
         preguntas = []
@@ -252,8 +279,9 @@ class ExamenApp:
                     num_pregunta = int(partes[i])
                     contenido = partes[i + 1].strip()
                     
-                    # Limpiar el contenido (quitar saltos de línea extras)
+                    # Limpiar el contenido (quitar saltos de línea extras y texto basura)
                     contenido = ' '.join(contenido.split())
+                    contenido = self.limpiar_texto_pdf(contenido)
                     
                     # Determinar tipo de pregunta
                     pregunta_data = self.parsear_pregunta(num_pregunta, contenido)
@@ -343,13 +371,7 @@ class ExamenApp:
                     num = int(partes[i])
                     contenido = partes[i + 1].strip()
                     contenido = ' '.join(contenido.split())  # Limpiar espacios
-                    
-                    # Buscar si hay huecos completados en el texto
-                    # El formato de respuesta para huecos es la frase completa
-                    # Necesitamos extraer las palabras que rellenan los huecos
-                    
-                    # Para preguntas de huecos, buscar las palabras clave
-                    # comparando con la pregunta original
+                    contenido = self.limpiar_texto_pdf(contenido)  # Limpiar texto basura
                     
                     # Por ahora guardamos el contenido completo
                     # y lo procesaremos al corregir
@@ -797,17 +819,17 @@ class ExamenApp:
                     # Necesitamos extraer las palabras de los huecos de la respuesta
                     # Las respuestas del usuario son las palabras elegidas en cada desplegable
                     
-                    # Extraer las palabras correctas de la frase de respuesta
-                    # Comparando con las opciones de cada hueco
+                    # Estrategia: usar el texto original de la pregunta con los huecos [...]
+                    # y compararlo estructuralmente con la respuesta completa
                     huecos = pregunta.get('huecos', [])
                     respuestas_correctas = []
                     
-                    for hueco_opciones in huecos:
-                        # Buscar cuál opción del hueco aparece en la respuesta correcta
-                        for opcion in hueco_opciones:
-                            if opcion.lower() in respuesta_correcta_raw.lower():
-                                respuestas_correctas.append(opcion)
-                                break
+                    # Obtener el texto de la pregunta con los huecos
+                    texto_pregunta = pregunta.get('texto', '')
+                    texto_respuesta = respuesta_correcta_raw
+                    
+                    # Extraer las respuestas correctas comparando estructuralmente
+                    respuestas_correctas = self._extraer_respuestas_huecos(texto_pregunta, texto_respuesta, huecos)
                     
                     # Comparar respuestas del usuario con las correctas
                     todas_correctas = True
@@ -845,11 +867,23 @@ class ExamenApp:
                     # La respuesta correcta del PDF es el texto de la opción correcta
                     # Buscar qué letra corresponde a ese texto
                     letra_correcta = "?"
+                    texto_correcto = str(respuesta_correcta_raw).strip().lower()
+                    # Limpiar el texto correcto de puntuación final
+                    texto_correcto = texto_correcto.rstrip('.').rstrip(',').strip()
+                    texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
+                    
                     for opcion in pregunta.get('opciones', []):
                         texto_opcion = opcion['texto'].strip().lower()
-                        texto_correcto = str(respuesta_correcta_raw).strip().lower()
-                        # Comparar si el texto coincide (completo o parcial)
-                        if texto_opcion == texto_correcto or texto_correcto in texto_opcion or texto_opcion in texto_correcto:
+                        texto_opcion_limpio = texto_opcion.rstrip('.').rstrip(',').strip()
+                        texto_opcion_limpio = re.sub(r'\s+', ' ', texto_opcion_limpio)
+                        
+                        # Comparaciones en orden de prioridad
+                        # 1. Comparación exacta
+                        if texto_opcion_limpio == texto_correcto:
+                            letra_correcta = opcion['letra']
+                            break
+                        # 2. Comparación de similitud estricta
+                        if self._textos_similares(texto_opcion_limpio, texto_correcto):
                             letra_correcta = opcion['letra']
                             break
                     
@@ -860,7 +894,7 @@ class ExamenApp:
                         incorrectas += 1
                         estado = "incorrecta"
                     
-                    respuesta_correcta_display = f"{letra_correcta}) {respuesta_correcta_raw}"
+                    respuesta_correcta_display = f"{letra_correcta}"
             else:
                 # Pregunta simple
                 if not respuesta_usuario:
@@ -1031,6 +1065,17 @@ class ExamenApp:
         
         tk.Button(
             frame_botones,
+            text="💾 Guardar Reporte",
+            command=lambda: self.guardar_reporte(resultados_detalle, correctas, incorrectas, sin_responder, nota_sobre_10, puntos),
+            font=("Arial", 12),
+            bg="#f39c12",
+            fg="white",
+            padx=20,
+            pady=10
+        ).pack(side="left", padx=5)
+        
+        tk.Button(
+            frame_botones,
             text="❌ Salir",
             command=self.root.quit,
             font=("Arial", 12),
@@ -1101,13 +1146,26 @@ class ExamenApp:
                 resp_correcta_raw = resultado.get('respuesta_correcta_raw', resultado['respuesta_correcta'])
                 resp_usuario = str(resultado['respuesta_usuario']).upper() if resultado['respuesta_usuario'] else ""
                 
+                # Primero encontrar la letra correcta comparando textos
+                letra_correcta = None
+                texto_correcto = str(resp_correcta_raw).strip().lower().rstrip('.').rstrip(',').strip()
+                texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
+                
                 for opcion in pregunta['opciones']:
-                    texto_opcion = opcion['texto'].strip().lower()
-                    texto_correcto = str(resp_correcta_raw).strip().lower()
-                    # La respuesta correcta es el texto, no la letra
-                    es_correcta = (texto_opcion == texto_correcto or 
-                                   texto_correcto in texto_opcion or 
-                                   texto_opcion in texto_correcto)
+                    texto_opcion = opcion['texto'].strip().lower().rstrip('.').rstrip(',').strip()
+                    texto_opcion = re.sub(r'\s+', ' ', texto_opcion)
+                    
+                    # Comparación exacta primero
+                    if texto_opcion == texto_correcto:
+                        letra_correcta = opcion['letra']
+                        break
+                    # Comparación de similitud estricta
+                    if self._textos_similares(texto_opcion, texto_correcto):
+                        letra_correcta = opcion['letra']
+                        break
+                
+                for opcion in pregunta['opciones']:
+                    es_correcta = (opcion['letra'] == letra_correcta)
                     es_usuario = opcion['letra'] == resp_usuario
                     
                     if es_correcta:
@@ -1146,6 +1204,387 @@ class ExamenApp:
                 bg=color_bg,
                 fg="#7f8c8d"
             ).pack(anchor="w", pady=5)
+    
+    def _textos_similares(self, texto1, texto2):
+        """Comparar dos textos de forma flexible pero precisa"""
+        # Limpiar textos
+        t1 = texto1.lower().strip().rstrip('.').rstrip(',').strip()
+        t2 = texto2.lower().strip().rstrip('.').rstrip(',').strip()
+        
+        # Eliminar caracteres especiales y espacios extras
+        t1 = re.sub(r'\s+', ' ', t1)
+        t2 = re.sub(r'\s+', ' ', t2)
+        
+        # Comparación exacta después de limpiar
+        if t1 == t2:
+            return True
+        
+        # Para textos cortos (respuestas de una palabra o dos), comparar directamente
+        if len(t1.split()) <= 2 or len(t2.split()) <= 2:
+            # Si alguno es corto, ver si está contenido en el otro
+            if t1 in t2 or t2 in t1:
+                return True
+            return False
+        
+        # Para textos largos (tipo opciones de test), ser más estrictos
+        # Solo considerar similares si comparten palabras SIGNIFICATIVAS
+        # Ignorar palabras funcionales comunes
+        palabras_ignorar = {
+            'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
+            'de', 'del', 'al', 'a', 'en', 'con', 'por', 'para',
+            'que', 'cual', 'quien', 'como', 'donde', 'cuando',
+            'y', 'o', 'pero', 'sino', 'ni', 'e', 'u',
+            'es', 'son', 'ser', 'está', 'están', 'estar',
+            'tiene', 'tienen', 'tener', 'hay',
+            'se', 'su', 'sus', 'lo', 'le', 'les',
+            'este', 'esta', 'estos', 'estas', 'ese', 'esa',
+            'más', 'menos', 'muy', 'tan', 'tanto',
+            'si', 'no', 'sí', 'ya', 'aún', 'todavía'
+        }
+        
+        # Extraer palabras significativas
+        palabras1 = set(p for p in t1.split() if p not in palabras_ignorar and len(p) > 2)
+        palabras2 = set(p for p in t2.split() if p not in palabras_ignorar and len(p) > 2)
+        
+        # Para ser similares, deben compartir al menos el 80% de las palabras significativas
+        if len(palabras1) > 0 and len(palabras2) > 0:
+            interseccion = palabras1.intersection(palabras2)
+            ratio = len(interseccion) / min(len(palabras1), len(palabras2))
+            if ratio >= 0.8:
+                return True
+        
+        return False
+    
+    def _extraer_respuestas_huecos(self, texto_pregunta, texto_respuesta, huecos):
+        """
+        Extrae las respuestas correctas de una pregunta de huecos
+        comparando estructuralmente la pregunta con la respuesta.
+        
+        Args:
+            texto_pregunta: Texto original con [opción1 | opción2 | ...]
+            texto_respuesta: Texto completo de respuesta
+            huecos: Lista de listas de opciones por cada hueco
+        
+        Returns:
+            Lista de las opciones correctas para cada hueco
+        """
+        import re
+        
+        # Normalizar textos
+        texto_pregunta_norm = texto_pregunta.lower().strip()
+        texto_pregunta_norm = re.sub(r'\s+', ' ', texto_pregunta_norm)
+        texto_respuesta_norm = texto_respuesta.lower().strip()
+        texto_respuesta_norm = re.sub(r'\s+', ' ', texto_respuesta_norm)
+        
+        # Estrategia: Construir una expresión regular a partir de la pregunta
+        # donde cada hueco se convierte en un grupo de captura con las opciones posibles
+        
+        patron_hueco = r'\[\s*[^\]]+\s*\]'
+        partes_fijas = re.split(patron_hueco, texto_pregunta_norm)
+        
+        # Construir el patrón regex
+        patron_partes = []
+        for i, parte in enumerate(partes_fijas):
+            # Escapar caracteres especiales de regex en el texto fijo
+            parte_escapada = re.escape(parte.strip())
+            # Hacer el patrón más flexible con espacios
+            parte_escapada = re.sub(r'\\ ', r'\\s+', parte_escapada)
+            patron_partes.append(parte_escapada)
+            
+            # Añadir grupo de captura para el hueco (excepto después de la última parte)
+            if i < len(huecos):
+                opciones_hueco = huecos[i]
+                # Crear alternativas para las opciones del hueco
+                opciones_escapadas = [re.escape(op.lower().strip()) for op in opciones_hueco]
+                grupo_opciones = '(' + '|'.join(opciones_escapadas) + ')'
+                patron_partes.append(grupo_opciones)
+        
+        # Unir el patrón con espacios flexibles
+        patron_completo = r'\s*'.join(patron_partes)
+        
+        try:
+            match = re.search(patron_completo, texto_respuesta_norm, re.IGNORECASE)
+            if match:
+                # Extraer las respuestas de los grupos capturados
+                respuestas_correctas = []
+                for i, grupo in enumerate(match.groups()):
+                    if grupo and i < len(huecos):
+                        # Buscar la opción original (con mayúsculas/minúsculas originales)
+                        for opcion in huecos[i]:
+                            if opcion.lower().strip() == grupo.lower().strip():
+                                respuestas_correctas.append(opcion)
+                                break
+                        else:
+                            respuestas_correctas.append(grupo)
+                return respuestas_correctas
+        except re.error as e:
+            print(f"Error en regex: {e}")
+        
+        # Fallback: método simple buscando cada opción en orden
+        respuestas_correctas = []
+        pos_busqueda = 0
+        
+        for opciones_hueco in huecos:
+            opcion_encontrada = None
+            mejor_pos = len(texto_respuesta_norm)
+            
+            for opcion in opciones_hueco:
+                opcion_norm = opcion.lower().strip()
+                pos = texto_respuesta_norm.find(opcion_norm, pos_busqueda)
+                if pos != -1 and pos < mejor_pos:
+                    mejor_pos = pos
+                    opcion_encontrada = opcion
+            
+            if opcion_encontrada:
+                respuestas_correctas.append(opcion_encontrada)
+                # Mover la posición de búsqueda después de esta opción encontrada
+                pos_busqueda = mejor_pos + len(opcion_encontrada)
+            else:
+                respuestas_correctas.append(opciones_hueco[0] if opciones_hueco else "")
+        
+        return respuestas_correctas
+
+    def guardar_reporte(self, resultados, correctas, incorrectas, sin_responder, nota, puntos):
+        """Guardar un reporte del intento en formato HTML"""
+        from datetime import datetime
+        import json
+        
+        # Pedir ubicación para guardar
+        archivo = filedialog.asksaveasfilename(
+            title="Guardar Reporte",
+            defaultextension=".html",
+            filetypes=[("Archivo HTML", "*.html"), ("Todos los archivos", "*.*")],
+            initialfile=f"reporte_examen_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+        )
+        
+        if not archivo:
+            return
+        
+        # Generar HTML
+        html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Examen - CSI</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }}
+        h1 {{
+            color: #2c3e50;
+            text-align: center;
+        }}
+        .fecha {{
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }}
+        .resumen {{
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }}
+        .nota {{
+            font-size: 48px;
+            font-weight: bold;
+            color: {"#27ae60" if nota >= 5 else "#e74c3c"};
+        }}
+        .detalles {{
+            color: #7f8c8d;
+            margin-top: 10px;
+        }}
+        .pregunta {{
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+        .pregunta.correcta {{
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }}
+        .pregunta.incorrecta {{
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }}
+        .pregunta.sin-responder {{
+            border-left-color: #95a5a6;
+            background: #f4f4f4;
+        }}
+        .pregunta-header {{
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }}
+        .pregunta-texto {{
+            margin-bottom: 10px;
+        }}
+        .opcion {{
+            padding: 5px 10px;
+            margin: 3px 0;
+        }}
+        .opcion.correcta {{
+            color: #27ae60;
+            font-weight: bold;
+        }}
+        .opcion.usuario-incorrecta {{
+            color: #e74c3c;
+            text-decoration: line-through;
+        }}
+        .respuesta-info {{
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }}
+        .stats {{
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }}
+        .stat {{
+            text-align: center;
+        }}
+        .stat-num {{
+            font-size: 24px;
+            font-weight: bold;
+        }}
+        .stat-label {{
+            font-size: 12px;
+            color: #7f8c8d;
+        }}
+        .correcta-num {{ color: #27ae60; }}
+        .incorrecta-num {{ color: #e74c3c; }}
+        .blanco-num {{ color: #95a5a6; }}
+    </style>
+</head>
+<body>
+    <h1>📊 Reporte de Examen - CSI</h1>
+    <p class="fecha">Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
+    
+    <div class="resumen">
+        <div class="nota">{nota:.2f} / 10</div>
+        <div class="detalles">
+            Puntos obtenidos: {puntos:.1f} de {len(resultados):.0f} posibles<br>
+            (+1 por acierto, -0.5 por fallo)
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-num correcta-num">{correctas}</div>
+                <div class="stat-label">Correctas (+{correctas} pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num incorrecta-num">{incorrectas}</div>
+                <div class="stat-label">Incorrectas (-{incorrectas * 0.5:.1f} pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num blanco-num">{sin_responder}</div>
+                <div class="stat-label">Sin responder</div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Detalle de Respuestas</h2>
+"""
+        
+        for i, resultado in enumerate(resultados):
+            pregunta = resultado['pregunta']
+            estado = resultado['estado']
+            clase_estado = estado.replace('_', '-')
+            
+            resp_usuario = resultado['respuesta_usuario']
+            resp_correcta = resultado['respuesta_correcta']
+            resp_correcta_raw = resultado.get('respuesta_correcta_raw', resp_correcta)
+            
+            if isinstance(resp_usuario, list):
+                resp_usuario_str = ", ".join(resp_usuario) if any(resp_usuario) else "Sin responder"
+            else:
+                resp_usuario_str = resp_usuario if resp_usuario else "Sin responder"
+            
+            if isinstance(resp_correcta, list):
+                resp_correcta_str = ", ".join(resp_correcta)
+            else:
+                resp_correcta_str = str(resp_correcta)
+            
+            icono = "✓" if estado == "correcta" else ("✗" if estado == "incorrecta" else "○")
+            
+            html += f"""
+    <div class="pregunta {clase_estado}">
+        <div class="pregunta-header">{icono} Pregunta {i+1} - Tema {pregunta['tema']} (#{pregunta['numero']})</div>
+        <div class="pregunta-texto">{pregunta['texto']}</div>
+"""
+            
+            # Mostrar opciones si es tipo test
+            if pregunta['tipo'] == 'test' and pregunta.get('opciones'):
+                texto_correcto = str(resp_correcta_raw).strip().lower().rstrip('.').rstrip(',').strip()
+                texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
+                resp_usuario_upper = str(resp_usuario).upper() if resp_usuario else ""
+                
+                # Encontrar la letra de la opción correcta
+                letra_correcta = None
+                for opcion in pregunta['opciones']:
+                    texto_opcion = opcion['texto'].strip().lower().rstrip('.').rstrip(',').strip()
+                    texto_opcion = re.sub(r'\s+', ' ', texto_opcion)
+                    
+                    # Comparación exacta primero
+                    if texto_opcion == texto_correcto:
+                        letra_correcta = opcion['letra']
+                        break
+                    # Comparación de similitud estricta
+                    if self._textos_similares(texto_opcion, texto_correcto):
+                        letra_correcta = opcion['letra']
+                        break
+                
+                for opcion in pregunta['opciones']:
+                    es_correcta = (opcion['letra'] == letra_correcta)
+                    es_usuario = (opcion['letra'] == resp_usuario_upper)
+                    
+                    clase_opcion = ""
+                    if es_correcta:
+                        clase_opcion = "correcta"
+                    elif es_usuario and not es_correcta:
+                        clase_opcion = "usuario-incorrecta"
+                    
+                    prefijo = "✓ " if es_correcta else ("✗ " if es_usuario and not es_correcta else "")
+                    html += f'        <div class="opcion {clase_opcion}">{prefijo}{opcion["letra"]}) {opcion["texto"]}</div>\n'
+                
+                # Mostrar respuesta correcta con letra
+                if letra_correcta:
+                    resp_correcta_str = f"{letra_correcta}"
+            
+            html += f"""        <div class="respuesta-info">Tu respuesta: {resp_usuario_str} | Correcta: {resp_correcta_str}</div>
+    </div>
+"""
+        
+        html += """
+</body>
+</html>
+"""
+        
+        try:
+            with open(archivo, 'w', encoding='utf-8') as f:
+                f.write(html)
+            
+            messagebox.showinfo("Éxito", f"Reporte guardado correctamente en:\n{archivo}")
+            
+            # Preguntar si desea abrir el archivo
+            if messagebox.askyesno("Abrir reporte", "¿Deseas abrir el reporte en el navegador?"):
+                import webbrowser
+                webbrowser.open(archivo)
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo guardar el reporte:\n{e}")
     
     def limpiar_pantalla(self):
         """Limpiar todos los widgets de la pantalla"""
