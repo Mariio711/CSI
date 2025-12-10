@@ -117,7 +117,7 @@ class ExamenApp:
         )
         self.spin_num_preguntas.pack(side="left", padx=10)
         self.spin_num_preguntas.delete(0, "end")
-        self.spin_num_preguntas.insert(0, "20")
+        self.spin_num_preguntas.insert(0, "100")
         
         # Checkbox para aleatorizar
         self.var_aleatorio = tk.BooleanVar(value=True)
