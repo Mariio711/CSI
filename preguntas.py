@@ -237,19 +237,25 @@ class ExamenApp:
         # Patrones de texto basura comunes en PDFs (headers/footers)
         patrones_basura = [
             # Formato: "Internet y Negocio Electrónico, 202 5-2026 Tema X - Preguntas/Respuestas"
-            r'Internet\s+y\s+Negocio\s+Electr[óo]nico[,.]?\s*\d*\s*\d*[-–]\d*\s*Tema\s*\d+\s*[-–]?\s*(Preguntas|Respuestas)?',
-            # Números de página sueltos
-            r'\b\d+\s*$',
-            # Otros patrones de encabezado/pie de página comunes
-            r'Tema\s+\d+\s*[-–]\s*(Preguntas|Respuestas)',
+            r'Internet\s+y\s+Negocio\s+Electr[óo]nico[,.]?\s*[\d\s]*[-–]?\s*\d*\s*Tema\s*\d+\s*[-–]?\s*(Preguntas|Respuestas)?',
+            # Formato: "Calidad de los Sistemas Informáticos, 2025-2026 Tema/Teoría X- Preguntas/Respuestas"  
+            r'Calidad\s+de\s+los\s+Sistemas\s+Inform[áa]ticos[,.]?\s*\d{4}\s*[-–]\s*\d{4}\s*(Tema|Teor[íi]a)?\s*\d*\s*[-–]?\s*(Preguntas|Respuestas)?',
+            # Formato: "Preguntas - Teoría" o "Respuestas - Tema"
+            r'(Preguntas|Respuestas)\s*[-–]\s*(Tema|Teor[íi]a)',
+            r'(Tema|Teor[íi]a)\s*[-–]?\s*(Preguntas|Respuestas)',
+            # Patrón genérico para asignaturas con año (más flexible)
+            r'[A-Za-záéíóúÁÉÍÓÚñÑ\s]{10,}[,.]?\s*\d{4}\s*[-–]\s*\d{4}',
+            # Números de página sueltos al final
+            r'\s+\d{1,3}\s*$',
+            # Texto tipo "202 5-2026" (año partido por mala extracción)
+            r'\b20\d\d?\s*[-–]?\s*\d{4}\b',
+            # P[áa]gina X de Y
             r'P[áa]gina\s+\d+\s*(de\s+\d+)?',
-            # Texto tipo "202 5-2026" (año partido)
-            r'\b20\d\s+\d[-–]\d{4}\b',
         ]
         
         resultado = texto
         for patron in patrones_basura:
-            resultado = re.sub(patron, '', resultado, flags=re.IGNORECASE)
+            resultado = re.sub(patron, ' ', resultado, flags=re.IGNORECASE)
         
         # Limpiar espacios extras resultantes
         resultado = re.sub(r'\s+', ' ', resultado).strip()
@@ -857,35 +863,7 @@ class ExamenApp:
                     respuesta_correcta_display = respuesta_correcta_raw
                 else:
                     # Para tipo test, la respuesta del usuario es la letra (A, B, C, D)
-                    # Buscar el texto de la opción seleccionada
-                    texto_respuesta_usuario = ""
-                    for opcion in pregunta.get('opciones', []):
-                        if opcion['letra'] == respuesta_usuario:
-                            texto_respuesta_usuario = opcion['texto']
-                            break
-                    
-                    # La respuesta correcta del PDF es el texto de la opción correcta
-                    # Buscar qué letra corresponde a ese texto
-                    letra_correcta = "?"
-                    texto_correcto = str(respuesta_correcta_raw).strip().lower()
-                    # Limpiar el texto correcto de puntuación final
-                    texto_correcto = texto_correcto.rstrip('.').rstrip(',').strip()
-                    texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
-                    
-                    for opcion in pregunta.get('opciones', []):
-                        texto_opcion = opcion['texto'].strip().lower()
-                        texto_opcion_limpio = texto_opcion.rstrip('.').rstrip(',').strip()
-                        texto_opcion_limpio = re.sub(r'\s+', ' ', texto_opcion_limpio)
-                        
-                        # Comparaciones en orden de prioridad
-                        # 1. Comparación exacta
-                        if texto_opcion_limpio == texto_correcto:
-                            letra_correcta = opcion['letra']
-                            break
-                        # 2. Comparación de similitud estricta
-                        if self._textos_similares(texto_opcion_limpio, texto_correcto):
-                            letra_correcta = opcion['letra']
-                            break
+                    letra_correcta = self._encontrar_opcion_correcta(pregunta.get('opciones', []), respuesta_correcta_raw)
                     
                     if respuesta_usuario == letra_correcta:
                         correctas += 1
@@ -1146,23 +1124,8 @@ class ExamenApp:
                 resp_correcta_raw = resultado.get('respuesta_correcta_raw', resultado['respuesta_correcta'])
                 resp_usuario = str(resultado['respuesta_usuario']).upper() if resultado['respuesta_usuario'] else ""
                 
-                # Primero encontrar la letra correcta comparando textos
-                letra_correcta = None
-                texto_correcto = str(resp_correcta_raw).strip().lower().rstrip('.').rstrip(',').strip()
-                texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
-                
-                for opcion in pregunta['opciones']:
-                    texto_opcion = opcion['texto'].strip().lower().rstrip('.').rstrip(',').strip()
-                    texto_opcion = re.sub(r'\s+', ' ', texto_opcion)
-                    
-                    # Comparación exacta primero
-                    if texto_opcion == texto_correcto:
-                        letra_correcta = opcion['letra']
-                        break
-                    # Comparación de similitud estricta
-                    if self._textos_similares(texto_opcion, texto_correcto):
-                        letra_correcta = opcion['letra']
-                        break
+                # Encontrar la letra correcta
+                letra_correcta = self._encontrar_opcion_correcta(pregunta['opciones'], resp_correcta_raw)
                 
                 for opcion in pregunta['opciones']:
                     es_correcta = (opcion['letra'] == letra_correcta)
@@ -1205,6 +1168,59 @@ class ExamenApp:
                 fg="#7f8c8d"
             ).pack(anchor="w", pady=5)
     
+    def _encontrar_opcion_correcta(self, opciones, texto_respuesta_pdf):
+        """
+        Encuentra la letra de la opción correcta comparando con el texto de respuesta del PDF.
+        El texto del PDF puede ser:
+        - Solo la respuesta: "de producto"
+        - El enunciado completo + respuesta: "Según Garvin... de producto."
+        """
+        if not opciones or not texto_respuesta_pdf:
+            return "?"
+        
+        texto_resp = str(texto_respuesta_pdf).strip().lower()
+        texto_resp = texto_resp.rstrip('.').rstrip(',').rstrip('?').rstrip('!').strip()
+        texto_resp = re.sub(r'\s+', ' ', texto_resp)
+        
+        mejor_match = None
+        mejor_score = 0
+        
+        for opcion in opciones:
+            texto_opcion = opcion['texto'].strip().lower()
+            texto_opcion = texto_opcion.rstrip('.').rstrip(',').strip()
+            texto_opcion = re.sub(r'\s+', ' ', texto_opcion)
+            
+            if not texto_opcion:
+                continue
+            
+            score = 0
+            
+            # 1. Coincidencia exacta (máxima prioridad)
+            if texto_opcion == texto_resp:
+                return opcion['letra']
+            
+            # 2. El texto de respuesta termina exactamente con la opción
+            if texto_resp.endswith(texto_opcion):
+                score = 100 + len(texto_opcion)
+            
+            # 3. La opción está contenida en el texto de respuesta
+            elif texto_opcion in texto_resp:
+                # Calcular posición relativa (más cerca del final = mejor)
+                pos = texto_resp.rfind(texto_opcion)
+                pos_relativa = pos / len(texto_resp) if len(texto_resp) > 0 else 0
+                # Bonus por longitud de match y posición
+                score = 50 + (len(texto_opcion) * 2) + (pos_relativa * 30)
+            
+            # 4. El texto de respuesta está contenido en la opción (respuesta corta)
+            elif texto_resp in texto_opcion and len(texto_resp) > 5:
+                score = 40 + len(texto_resp)
+            
+            if score > mejor_score:
+                mejor_score = score
+                mejor_match = opcion['letra']
+        
+        return mejor_match if mejor_match else "?"
+    
     def _textos_similares(self, texto1, texto2):
         """Comparar dos textos de forma flexible pero precisa"""
         # Limpiar textos
@@ -1219,11 +1235,21 @@ class ExamenApp:
         if t1 == t2:
             return True
         
-        # Para textos cortos (respuestas de una palabra o dos), comparar directamente
-        if len(t1.split()) <= 2 or len(t2.split()) <= 2:
-            # Si alguno es corto, ver si está contenido en el otro
-            if t1 in t2 or t2 in t1:
+        # Para textos cortos (respuestas de una o dos palabras), comparar de forma estricta
+        if len(t1.split()) <= 2 and len(t2.split()) <= 2:
+            # Ambos son cortos - deben ser muy similares
+            # Verificar si son iguales o uno contiene completamente al otro
+            if t1 == t2:
                 return True
+            # Solo permitir contenido si son casi del mismo tamaño
+            if len(t1) > 0 and len(t2) > 0:
+                ratio_longitud = min(len(t1), len(t2)) / max(len(t1), len(t2))
+                if ratio_longitud > 0.7 and (t1 in t2 or t2 in t1):
+                    return True
+            return False
+        
+        # Si solo uno es corto, no deben coincidir
+        if len(t1.split()) <= 2 or len(t2.split()) <= 2:
             return False
         
         # Para textos largos (tipo opciones de test), ser más estrictos
@@ -1527,24 +1553,10 @@ class ExamenApp:
             
             # Mostrar opciones si es tipo test
             if pregunta['tipo'] == 'test' and pregunta.get('opciones'):
-                texto_correcto = str(resp_correcta_raw).strip().lower().rstrip('.').rstrip(',').strip()
-                texto_correcto = re.sub(r'\s+', ' ', texto_correcto)
                 resp_usuario_upper = str(resp_usuario).upper() if resp_usuario else ""
                 
                 # Encontrar la letra de la opción correcta
-                letra_correcta = None
-                for opcion in pregunta['opciones']:
-                    texto_opcion = opcion['texto'].strip().lower().rstrip('.').rstrip(',').strip()
-                    texto_opcion = re.sub(r'\s+', ' ', texto_opcion)
-                    
-                    # Comparación exacta primero
-                    if texto_opcion == texto_correcto:
-                        letra_correcta = opcion['letra']
-                        break
-                    # Comparación de similitud estricta
-                    if self._textos_similares(texto_opcion, texto_correcto):
-                        letra_correcta = opcion['letra']
-                        break
+                letra_correcta = self._encontrar_opcion_correcta(pregunta['opciones'], resp_correcta_raw)
                 
                 for opcion in pregunta['opciones']:
                     es_correcta = (opcion['letra'] == letra_correcta)
