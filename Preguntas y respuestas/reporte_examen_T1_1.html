@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Examen - CSI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .fecha {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .resumen {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nota {
+            font-size: 48px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .detalles {
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        .pregunta {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .pregunta.correcta {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+        .pregunta.incorrecta {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }
+        .pregunta.sin-responder {
+            border-left-color: #95a5a6;
+            background: #f4f4f4;
+        }
+        .pregunta-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .pregunta-texto {
+            margin-bottom: 10px;
+        }
+        .opcion {
+            padding: 5px 10px;
+            margin: 3px 0;
+        }
+        .opcion.correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .opcion.usuario-incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-info {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .correcta-num { color: #27ae60; }
+        .incorrecta-num { color: #e74c3c; }
+        .blanco-num { color: #95a5a6; }
+    </style>
+</head>
+<body>
+    <h1>📊 Reporte de Examen - CSI</h1>
+    <p class="fecha">Fecha: 10/12/2025 12:15:18</p>
+    
+    <div class="resumen">
+        <div class="nota">4.64 / 10</div>
+        <div class="detalles">
+            Puntos obtenidos: 6.5 de 14 posibles<br>
+            (+1 por acierto, -0.5 por fallo)
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-num correcta-num">9</div>
+                <div class="stat-label">Correctas (+9 pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num incorrecta-num">5</div>
+                <div class="stat-label">Incorrectas (-2.5 pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num blanco-num">0</div>
+                <div class="stat-label">Sin responder</div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Detalle de Respuestas</h2>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 1 - Tema 1 (#3)</div>
+        <div class="pregunta-texto">Según The Standish Group, entre las causas endógenas del fracaso del software se encuentran…</div>
+        <div class="opcion usuario-incorrecta">✗ A) los usuarios ﬁnales, los requisitos y las expectativas.</div>
+        <div class="opcion correcta">✓ B) el soporte ejecutivo, los recursos y la competencia tecnológica.</div>
+        <div class="opcion ">C) los objetivos, los cronogramas y la formación.</div>
+        <div class="opcion ">D) los requisitos, los cronogramas y el coste ﬁnal.</div>
+        <div class="respuesta-info">Tu respuesta: A | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 2 - Tema 1 (#1)</div>
+        <div class="pregunta-texto">Según The Standish Group, en los últimos años se ha dado aproximadamente un [ 5% | 30% | 15% ] de proyectos exitosos, [ 75% | 50% | 65% ] discutidos, y 20% de fracasos.</div>
+        <div class="respuesta-info">Tu respuesta: 30%, 50% | Correcta: 30%, 50%</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 3 - Tema 1 (#10)</div>
+        <div class="pregunta-texto">Según Garvin, a la satisfactoria adecuación a las necesidades del cliente se la conoce como calidad…</div>
+        <div class="opcion ">A) de cliente.</div>
+        <div class="opcion correcta">✓ B) de usuario.</div>
+        <div class="opcion usuario-incorrecta">✗ C) de fabricación.</div>
+        <div class="opcion ">D) basada en valor.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: B</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 4 - Tema 1 (#7)</div>
+        <div class="pregunta-texto">La producción en cadena de Taylor se basaba en la [ especialización | satisfacción ] del trabajador, el [ control del tiempo | proceso ] y la [ mecanización | diversiﬁcación ].</div>
+        <div class="respuesta-info">Tu respuesta: especialización, proceso, mecanización | Correcta: especialización, control del tiempo, mecanización</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 5 - Tema 1 (#2)</div>
+        <div class="pregunta-texto">Según The Standish Group, entre las causas exógenas del fracaso del software se encuentran…</div>
+        <div class="opcion correcta">✓ A) los usuarios ﬁnales, los requisitos y las expectativas.</div>
+        <div class="opcion usuario-incorrecta">✗ B) el soporte ejecutivo, los recursos y la competencia tecnológica.</div>
+        <div class="opcion ">C) los objetivos, los cronogramas y la formación.</div>
+        <div class="opcion ">D) los requisitos, los cronogramas y el coste ﬁnal.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: A</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 6 - Tema 1 (#5)</div>
+        <div class="pregunta-texto">Según The Standish Group, el fracaso software se debe, entre otros, a [ requisitos | cronogramas ] incompletos, [ inversiones | expectativas ] no realistas y [ objetivos | procedimientos ] ambiguos.</div>
+        <div class="respuesta-info">Tu respuesta: requisitos, expectativas, objetivos | Correcta: requisitos, expectativas, objetivos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 7 - Tema 1 (#9)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad reconocible, pero no deﬁnible, se la conoce como calidad…</div>
+        <div class="opcion correcta">✓ A) trascendente .</div>
+        <div class="opcion ">B) basada en valor.</div>
+        <div class="opcion ">C) intrascendente.</div>
+        <div class="opcion ">D) subjetiva.</div>
+        <div class="respuesta-info">Tu respuesta: A | Correcta: A</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 8 - Tema 1 (#6)</div>
+        <div class="pregunta-texto">Los tres pilares sobre los que se fundamenta la calidad en sus orígenes son [ medidas | satisfacción ], [ procedimientos | normas ] y [ revisión | sanciones ].</div>
+        <div class="respuesta-info">Tu respuesta: medidas, normas, sanciones | Correcta: medidas, normas, sanciones</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 9 - Tema 1 (#11)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad derivada de las cualidades inherentes a un producto se la denomina calidad…</div>
+        <div class="opcion ">A) inherente.</div>
+        <div class="opcion correcta">✓ B) de producto.</div>
+        <div class="opcion ">C) de fabricación.</div>
+        <div class="opcion ">D) háptica.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 10 - Tema 1 (#13)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad asociada al interés y urgencia del cliente se la denomina calidad…</div>
+        <div class="opcion ">A) potencial.</div>
+        <div class="opcion ">B) de usuario.</div>
+        <div class="opcion ">C) de cliente.</div>
+        <div class="opcion correcta">✓ D) basada en valor.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 11 - Tema 1 (#4)</div>
+        <div class="pregunta-texto">Según The Standish Group, una causa endógena del fracaso software es atender más al [ dónde | cuándo | cómo ] que al [ para quién | qué | porqué ].</div>
+        <div class="respuesta-info">Tu respuesta: cómo, qué | Correcta: cómo, qué</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 12 - Tema 1 (#12)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad asociada a la empresa productora se la denomina calidad…</div>
+        <div class="opcion ">A) de especiﬁcación.</div>
+        <div class="opcion ">B) de proceso.</div>
+        <div class="opcion correcta">✓ C) de fabricación.</div>
+        <div class="opcion ">D) basada en producto.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 13 - Tema 1 (#14)</div>
+        <div class="pregunta-texto">Deﬁnimos calidad como la conformidad con las expectativas [ de producto | de información ], [ de proceso | de gestión ] y humanas, de [ todos | los clientes ] los implicados en un proyecto .</div>
+        <div class="respuesta-info">Tu respuesta: de producto, de gestión, todos | Correcta: de producto, de proceso, todos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 14 - Tema 1 (#8)</div>
+        <div class="pregunta-texto">Tres familias de normas asociadas con la calidad son [ ISO 9000 | RD 34/2002 ] , [ Siete Valores | Seis -Sigma ] y [ EFQM | NEREA ]. Teoría 1 - Preguntas</div>
+        <div class="respuesta-info">Tu respuesta: ISO 9000, Seis -Sigma, EFQM | Correcta: ISO 9000, Seis -Sigma, EFQM</div>
+    </div>
+
+</body>
+</html>

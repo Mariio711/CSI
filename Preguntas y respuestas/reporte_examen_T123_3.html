@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Examen - CSI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .fecha {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .resumen {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nota {
+            font-size: 48px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .detalles {
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        .pregunta {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .pregunta.correcta {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+        .pregunta.incorrecta {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }
+        .pregunta.sin-responder {
+            border-left-color: #95a5a6;
+            background: #f4f4f4;
+        }
+        .pregunta-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .pregunta-texto {
+            margin-bottom: 10px;
+        }
+        .opcion {
+            padding: 5px 10px;
+            margin: 3px 0;
+        }
+        .opcion.correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .opcion.usuario-incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-info {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .correcta-num { color: #27ae60; }
+        .incorrecta-num { color: #e74c3c; }
+        .blanco-num { color: #95a5a6; }
+    </style>
+</head>
+<body>
+    <h1>📊 Reporte de Examen - CSI</h1>
+    <p class="fecha">Fecha: 11/12/2025 01:40:38</p>
+    
+    <div class="resumen">
+        <div class="nota">9.39 / 10</div>
+        <div class="detalles">
+            Puntos obtenidos: 46.0 de 49 posibles<br>
+            (+1 por acierto, -0.5 por fallo)
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-num correcta-num">47</div>
+                <div class="stat-label">Correctas (+47 pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num incorrecta-num">2</div>
+                <div class="stat-label">Incorrectas (-1.0 pts)</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num blanco-num">0</div>
+                <div class="stat-label">Sin responder</div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Detalle de Respuestas</h2>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 1 - Tema 1 (#9)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad reconocible, pero no deﬁnible, se la conoce como calidad…</div>
+        <div class="opcion correcta">✓ A) trascendente .</div>
+        <div class="opcion ">B) basada en valor.</div>
+        <div class="opcion ">C) subjetiva.</div>
+        <div class="opcion ">D) intrascendente.</div>
+        <div class="respuesta-info">Tu respuesta: A | Correcta: A</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 2 - Tema 2 (#8)</div>
+        <div class="pregunta-texto">El objetivo del diagnóstico al estudiar una demanda de un cliente es…</div>
+        <div class="opcion ">A) deﬁnir los requisitos de información del sistema.</div>
+        <div class="opcion ">B) Todas las respuestas son correctas.</div>
+        <div class="opcion correcta">✓ C) saber si tengo interés y capacidad para hacerlo.</div>
+        <div class="opcion ">D) establecer los requisitos funcionales del sistema.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 3 - Tema 2 (#9)</div>
+        <div class="pregunta-texto">Además de Pruebas, la parte de Desarrollo de una memoria de proyecto contiene los capítulos [ Análisis | Planiﬁcación ], [ Diseño | Análisis ] [ y Diseño | e Implementación ].</div>
+        <div class="respuesta-info">Tu respuesta: Análisis, Diseño, e Implementación | Correcta: Análisis, Diseño, e Implementación</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 4 - Tema 2 (#17)</div>
+        <div class="pregunta-texto">La competencia real se logra con el tiempo mediante…</div>
+        <div class="opcion correcta">✓ A) experiencia, esfuerzo y capacidad.</div>
+        <div class="opcion ">B) mérito, formación y competencia.</div>
+        <div class="opcion ">C) colaboración, liderazgo y trabajo en equipo.</div>
+        <div class="opcion ">D) principios, integridad y determinación.</div>
+        <div class="respuesta-info">Tu respuesta: A | Correcta: A</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 5 - Tema 3 (#6)</div>
+        <div class="pregunta-texto">Los requisitos [ no funcionales | funcionales | de información ] representan acciones que realiza el [ sistema | actor | usuario ].</div>
+        <div class="respuesta-info">Tu respuesta: funcionales, sistema | Correcta: funcionales, sistema</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 6 - Tema 2 (#2)</div>
+        <div class="pregunta-texto">Según Alan Davis, ¿quién es la persona más importante de un proyecto?</div>
+        <div class="opcion correcta">✓ A) El usuario.</div>
+        <div class="opcion ">B) El desarrollador.</div>
+        <div class="opcion ">C) El comercial.</div>
+        <div class="opcion ">D) El analista o quien recabe los requisitos.</div>
+        <div class="respuesta-info">Tu respuesta: A | Correcta: A</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 7 - Tema 1 (#8)</div>
+        <div class="pregunta-texto">Tres familias de normas asociadas con la calidad son [ ISO 9000 | RD 34/2002 ] , [ Siete Valores | Seis -Sigma ] y [ EFQM | NEREA ]. Teoría 1 - Preguntas</div>
+        <div class="respuesta-info">Tu respuesta: ISO 9000, Seis -Sigma, EFQM | Correcta: ISO 9000, Seis -Sigma, EFQM</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 8 - Tema 1 (#5)</div>
+        <div class="pregunta-texto">Según The Standish Group, el fracaso software se debe, entre otros, a [ requisitos | cronogramas ] incompletos, [ inversiones | expectativas ] no realistas y [ objetivos | procedimientos ] ambiguos.</div>
+        <div class="respuesta-info">Tu respuesta: requisitos, expectativas, objetivos | Correcta: requisitos, expectativas, objetivos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 9 - Tema 1 (#3)</div>
+        <div class="pregunta-texto">Según The Standish Group, entre las causas endógenas del fracaso del software se encuentran…</div>
+        <div class="opcion ">A) los requisitos, los cronogramas y el coste ﬁnal.</div>
+        <div class="opcion ">B) los usuarios ﬁnales, los requisitos y las expectativas.</div>
+        <div class="opcion correcta">✓ C) el soporte ejecutivo, los recursos y la competencia tecnológica.</div>
+        <div class="opcion ">D) los objetivos, los cronogramas y la formación.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 10 - Tema 3 (#7)</div>
+        <div class="pregunta-texto">La denominación de un requisito funcional tiene la forma [ nombre | Crear | verbo ] + [ nombre | adjetivo | acción ].</div>
+        <div class="respuesta-info">Tu respuesta: verbo, nombre | Correcta: verbo, nombre</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 11 - Tema 2 (#7)</div>
+        <div class="pregunta-texto">Para deﬁnir el ámbito de un proyecto, se requiere conocer sus [ usuarios | requisitos ], la [ infraestructura | entidad ] y la [ entidad | explotación ].</div>
+        <div class="respuesta-info">Tu respuesta: usuarios, infraestructura, explotación | Correcta: usuarios, infraestructura, explotación</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 12 - Tema 1 (#7)</div>
+        <div class="pregunta-texto">La producción en cadena de Taylor se basaba en la [ especialización | satisfacción ] del trabajador, el [ control del tiempo | proceso ] y la [ mecanización | diversiﬁcación ].</div>
+        <div class="respuesta-info">Tu respuesta: especialización, control del tiempo, mecanización | Correcta: especialización, control del tiempo, mecanización</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 13 - Tema 2 (#11)</div>
+        <div class="pregunta-texto">Se denomina [ Portabilidad y compatibilidad | Estado del arte | Análisis de mercado ] a la sección de la Introducción del proyecto donde se revisan sistemas existentes [ similares a | portables y/o compatibles con | incompatibles con ] nuestro proyecto.</div>
+        <div class="respuesta-info">Tu respuesta: Estado del arte, similares a | Correcta: Estado del arte, similares a</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 14 - Tema 2 (#14)</div>
+        <div class="pregunta-texto">Según el principio de Dilbert, las compañías tienden a [ ascender | degradar ] a sus empleados [ más | menos ] competentes a [ directivos | otras categorías contractuales ].</div>
+        <div class="respuesta-info">Tu respuesta: ascender, menos, directivos | Correcta: ascender, menos, directivos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 15 - Tema 3 (#15)</div>
+        <div class="pregunta-texto">Un diagrama de casos de uso contiene [ actores | entidades ], [ entidades | agrupaciones funcionales ] y [ requisitos no funcionales | casos de uso ].</div>
+        <div class="respuesta-info">Tu respuesta: actores, agrupaciones funcionales, casos de uso | Correcta: actores, agrupaciones funcionales, casos de uso</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 16 - Tema 3 (#9)</div>
+        <div class="pregunta-texto">Indica qué expresión no es un requisito funcional correcto.</div>
+        <div class="opcion ">A) Rechazar Solicitud.</div>
+        <div class="opcion ">B) Enviar Conﬁrmación.</div>
+        <div class="opcion ">C) Actualizar Producto.</div>
+        <div class="opcion correcta">✓ D) Visualizar Factura.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 17 - Tema 3 (#10)</div>
+        <div class="pregunta-texto">Indica el requisito funcional denominado correctamente.</div>
+        <div class="opcion ">A) Comprar Vehículo.</div>
+        <div class="opcion ">B) Consultar Datos de usuario.</div>
+        <div class="opcion correcta">✓ C) Mostrar incidencia.</div>
+        <div class="opcion ">D) Ver Proveedor.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 18 - Tema 3 (#13)</div>
+        <div class="pregunta-texto">El diagrama que representa los requisitos de información se denomina diagrama…</div>
+        <div class="opcion ">A) Entidad -Relación.</div>
+        <div class="opcion ">B) de entidades.</div>
+        <div class="opcion correcta">✓ C) conceptual.</div>
+        <div class="opcion ">D) de relaciones.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 19 - Tema 2 (#6)</div>
+        <div class="pregunta-texto">La necesidad "directiva" de un cliente implica que…</div>
+        <div class="opcion ">A) el cliente solicita un proyecto externalizado bajo nuestra dirección.</div>
+        <div class="opcion correcta">✓ B) el cliente pretende solventar problemas organizativos mediante la automatización de procesos.</div>
+        <div class="opcion ">C) el cliente presenta necesidades primordialmente resolubles mediante tecnología.</div>
+        <div class="opcion ">D) el cliente requiere soluciones informáticas para la dirección de la entidad.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 20 - Tema 2 (#12)</div>
+        <div class="pregunta-texto">Un objetivo de la recolección de requisitos es…</div>
+        <div class="opcion ">A) Todas las respuestas son correctas.</div>
+        <div class="opcion ">B) conocer el sistema actual.</div>
+        <div class="opcion ">C) determinar necesidades y límites.</div>
+        <div class="opcion correcta">✓ D) estudiar el contexto del negocio.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 21 - Tema 1 (#14)</div>
+        <div class="pregunta-texto">Deﬁnimos calidad como la conformidad con las expectativas [ de producto | de información ], [ de proceso | de gestión ] y humanas, de [ todos | los clientes ] los implicados en un proyecto .</div>
+        <div class="respuesta-info">Tu respuesta: de producto, de proceso, todos | Correcta: de producto, de proceso, todos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 22 - Tema 3 (#3)</div>
+        <div class="pregunta-texto">Del análisis de requisitos debe obtenerse una relación…</div>
+        <div class="opcion ">A) de alternativas tecnológicas.</div>
+        <div class="opcion correcta">✓ B) de las necesidades del cliente.</div>
+        <div class="opcion ">C) de todos los componentes del sistema.</div>
+        <div class="opcion ">D) de objetivos y del ámbito del problema.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 23 - Tema 2 (#16)</div>
+        <div class="pregunta-texto">Según Dunning -Kruger, los individuos incompetentes…</div>
+        <div class="opcion ">A) tienden a evitar tomar decisiones.</div>
+        <div class="opcion ">B) tienden a refugiarse en su incompetencia para evitar responsabilidades.</div>
+        <div class="opcion correcta">✓ C) tienden a sobreestimar sus propias habilidades.</div>
+        <div class="opcion ">D) tienden a trabajar más duramente para compensar esta condición.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 24 - Tema 3 (#17)</div>
+        <div class="pregunta-texto">En los requisitos [ funcionales | de información ] se describen los [ datos | casos de uso ] necesarios para cumplir los requisitos [ de información | funcionales ].</div>
+        <div class="respuesta-info">Tu respuesta: de información, datos, funcionales | Correcta: de información, datos, funcionales</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 25 - Tema 2 (#4)</div>
+        <div class="pregunta-texto">El primer objetivo de la recolección de requisitos es estudiar el [ contexto | cliente | usuario ] del [ sistema | negocio | producto ].</div>
+        <div class="respuesta-info">Tu respuesta: contexto, negocio | Correcta: contexto, negocio</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 26 - Tema 2 (#5)</div>
+        <div class="pregunta-texto">La necesidad "procedimental" de un cliente implica que…</div>
+        <div class="opcion ">A) el cliente necesita revisar sus procedimientos antes de comenzar el proyecto.</div>
+        <div class="opcion ">B) el cliente necesita documentar sus soluciones informáticas.</div>
+        <div class="opcion ">C) el cliente necesita revisar la funcionalidad de sus aplicaciones informáticas.</div>
+        <div class="opcion correcta">✓ D) el cliente necesita revisar sus procedimientos antes de informatizarlos.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 27 - Tema 3 (#1)</div>
+        <div class="pregunta-texto">En desarrollo de soluciones comprende dos dominios: el dominio del [ cliente | problema | contexto ] y el dominio de la [ tecnología | aplicación | solución ].</div>
+        <div class="respuesta-info">Tu respuesta: problema, solución | Correcta: problema, solución</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 28 - Tema 1 (#10)</div>
+        <div class="pregunta-texto">Según Garvin, a la satisfactoria adecuación a las necesidades del cliente se la conoce como calidad…</div>
+        <div class="opcion ">A) de fabricación.</div>
+        <div class="opcion correcta">✓ B) de usuario.</div>
+        <div class="opcion ">C) de cliente.</div>
+        <div class="opcion ">D) basada en valor.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 29 - Tema 2 (#10)</div>
+        <div class="pregunta-texto">¿Qué debe contener la sección "Conceptos básicos" de una memoria de proyectos?</div>
+        <div class="opcion ">A) Las siglas y los acrónimos.</div>
+        <div class="opcion ">B) La explicación de todos los términos técnicos que pudiera no entender el cliente.</div>
+        <div class="opcion correcta">✓ C) Las deﬁniciones necesarias para entender el modelo.</div>
+        <div class="opcion ">D) Cualquier anotación de interés para entender la memoria.</div>
+        <div class="respuesta-info">Tu respuesta: C | Correcta: C</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 30 - Tema 1 (#11)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad derivada de las cualidades inherentes a un producto se la denomina calidad…</div>
+        <div class="opcion ">A) inherente.</div>
+        <div class="opcion ">B) de fabricación.</div>
+        <div class="opcion ">C) háptica.</div>
+        <div class="opcion correcta">✓ D) de producto.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 31 - Tema 3 (#5)</div>
+        <div class="pregunta-texto">En el ámbito del desarrollo software, un actor es…</div>
+        <div class="opcion ">A) todo perﬁl relacionado con el dominio del problema.</div>
+        <div class="opcion ">B) Todas las respuestas son correctas.</div>
+        <div class="opcion ">C) básicamente un usuario.</div>
+        <div class="opcion correcta">✓ D) todo perﬁl que actúa directamente con el sistema.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 32 - Tema 2 (#3)</div>
+        <div class="pregunta-texto">Para deﬁnir los objetivos de un proyecto, se requiere conocer la [ motivación | organización ], las [ funcionalidades | ﬁnalidades ] y los [ plazos | usuarios ].</div>
+        <div class="respuesta-info">Tu respuesta: motivación, ﬁnalidades, plazos | Correcta: motivación, ﬁnalidades, plazos</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 33 - Tema 2 (#13)</div>
+        <div class="pregunta-texto">Las tres fases principales de una recolección de requisitos son la [ presentación | preparación ], la [ recolección | entrevista ] y la [ despedida | revisión ], por este orden.</div>
+        <div class="respuesta-info">Tu respuesta: preparación, recolección, revisión | Correcta: preparación, recolección, revisión</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 34 - Tema 3 (#11)</div>
+        <div class="pregunta-texto">La denominación de un requisito funcional para guardar la corrección de un examen , incluyendo anotaciones, se denomina [ Crear | Corregir | Caliﬁcar ] [ Examen | Corrección | Test ].</div>
+        <div class="respuesta-info">Tu respuesta: Crear, Corrección | Correcta: Crear, Corrección</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 35 - Tema 3 (#8)</div>
+        <div class="pregunta-texto">Indica qué expresión no es un requisito funcional correcto.</div>
+        <div class="opcion ">A) Eliminar Usuario.</div>
+        <div class="opcion ">B) Crear Aula.</div>
+        <div class="opcion ">C) Imprimir Factura.</div>
+        <div class="opcion correcta">✓ D) Alquilar Vehículo.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 36 - Tema 3 (#14)</div>
+        <div class="pregunta-texto">Los requisitos funcionales se representan visualmente como…</div>
+        <div class="opcion ">A) agrupaciones funcionales.</div>
+        <div class="opcion ">B) actores.</div>
+        <div class="opcion ">C) entidades.</div>
+        <div class="opcion correcta">✓ D) casos de uso.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 37 - Tema 1 (#12)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad asociada a la empresa productora se la denomina calidad…</div>
+        <div class="opcion ">A) de especiﬁcación.</div>
+        <div class="opcion ">B) basada en producto.</div>
+        <div class="opcion ">C) de proceso.</div>
+        <div class="opcion correcta">✓ D) de fabricación.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 38 - Tema 3 (#12)</div>
+        <div class="pregunta-texto">Los requisitos [ funcionales | no funcionales | de información ] pueden obtenerse de la norma ISO/IEC 25000 ( [ SpICE | SQuaRE | EFQM ]).</div>
+        <div class="respuesta-info">Tu respuesta: no funcionales, SQuaRE | Correcta: no funcionales, SQuaRE</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 39 - Tema 2 (#1)</div>
+        <div class="pregunta-texto">Según Alan Davis, el software se desarrolla para satisfacer [ demandas | necesidades | a clientes ] reales y resolver demandas [ reales | universales | empresariales ].</div>
+        <div class="respuesta-info">Tu respuesta: necesidades, reales | Correcta: necesidades, reales</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 40 - Tema 3 (#2)</div>
+        <div class="pregunta-texto">En el análisis de requisitos, los [ atributos | campos ] de todas las [ entidades | acciones ] deben encontrarse en el dominio [ del problema | de la solución ].</div>
+        <div class="respuesta-info">Tu respuesta: atributos, entidades, de la solución | Correcta: atributos, entidades, del problema</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 41 - Tema 3 (#16)</div>
+        <div class="pregunta-texto">Las agrupaciones funcionales generalmente contienen los casos de uso que atañen…</div>
+        <div class="opcion ">A) al mismo actor.</div>
+        <div class="opcion ">B) al mismo dominio del problema.</div>
+        <div class="opcion ">C) al mismo requisito funcional.</div>
+        <div class="opcion correcta">✓ D) a la misma entidad.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 42 - Tema 3 (#4)</div>
+        <div class="pregunta-texto">La fase de [ Análisis | Implementación | Pruebas ] [ es parte de | no depende de | determina ] la solución tecnológica ﬁnal.</div>
+        <div class="respuesta-info">Tu respuesta: Análisis, no depende de | Correcta: Análisis, no depende de</div>
+    </div>
+
+    <div class="pregunta incorrecta">
+        <div class="pregunta-header">✗ Pregunta 43 - Tema 3 (#18)</div>
+        <div class="pregunta-texto">Con relación al análisis, escoge la opción correcta.</div>
+        <div class="opcion ">A) Un actor representa a un usuario.</div>
+        <div class="opcion correcta">✓ B) Un actor puede representar a varios usuarios.</div>
+        <div class="opcion ">C) Un actor puede representar a varios perﬁles de usuario.</div>
+        <div class="opcion usuario-incorrecta">✗ D) Existe un único actor principal, pero puede haber varios secundarios.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: B</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 44 - Tema 1 (#2)</div>
+        <div class="pregunta-texto">Según The Standish Group, entre las causas exógenas del fracaso del software se encuentran…</div>
+        <div class="opcion ">A) los requisitos, los cronogramas y el coste ﬁnal.</div>
+        <div class="opcion ">B) los objetivos, los cronogramas y la formación.</div>
+        <div class="opcion ">C) el soporte ejecutivo, los recursos y la competencia tecnológica.</div>
+        <div class="opcion correcta">✓ D) los usuarios ﬁnales, los requisitos y las expectativas.</div>
+        <div class="respuesta-info">Tu respuesta: D | Correcta: D</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 45 - Tema 1 (#6)</div>
+        <div class="pregunta-texto">Los tres pilares sobre los que se fundamenta la calidad en sus orígenes son [ medidas | satisfacción ], [ procedimientos | normas ] y [ revisión | sanciones ].</div>
+        <div class="respuesta-info">Tu respuesta: medidas, normas, sanciones | Correcta: medidas, normas, sanciones</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 46 - Tema 1 (#4)</div>
+        <div class="pregunta-texto">Según The Standish Group, una causa endógena del fracaso software es atender más al [ dónde | cuándo | cómo ] que al [ para quién | qué | porqué ].</div>
+        <div class="respuesta-info">Tu respuesta: cómo, qué | Correcta: cómo, qué</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 47 - Tema 1 (#1)</div>
+        <div class="pregunta-texto">Según The Standish Group, en los últimos años se ha dado aproximadamente un [ 5% | 30% | 15% ] de proyectos exitosos, [ 75% | 50% | 65% ] discutidos, y 20% de fracasos.</div>
+        <div class="respuesta-info">Tu respuesta: 30%, 50% | Correcta: 30%, 50%</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 48 - Tema 2 (#15)</div>
+        <div class="pregunta-texto">Según el corolario de Peter, las personas que hacen [ mal | muy mal | bien ] su trabajo suelen ser promocionadas hasta volverse [ más competentes | aún más competentes | incompetentes ].</div>
+        <div class="respuesta-info">Tu respuesta: bien, incompetentes | Correcta: bien, incompetentes</div>
+    </div>
+
+    <div class="pregunta correcta">
+        <div class="pregunta-header">✓ Pregunta 49 - Tema 1 (#13)</div>
+        <div class="pregunta-texto">Según Garvin, a la calidad asociada al interés y urgencia del cliente se la denomina calidad…</div>
+        <div class="opcion ">A) potencial.</div>
+        <div class="opcion correcta">✓ B) basada en valor.</div>
+        <div class="opcion ">C) de cliente.</div>
+        <div class="opcion ">D) de usuario.</div>
+        <div class="respuesta-info">Tu respuesta: B | Correcta: B</div>
+    </div>
+
+</body>
+</html>
