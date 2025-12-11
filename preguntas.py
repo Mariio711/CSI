@@ -4,6 +4,7 @@ import PyPDF2
 import os
 import re
 import random
+import platform
 from pathlib import Path
 
 
@@ -13,6 +14,18 @@ class ExamenApp:
         self.root.title("Sistema de Exámenes - CSI")
         self.root.geometry("1000x750")
         self.root.configure(bg="#f0f0f0")
+        
+        # Detectar sistema operativo
+        self.is_macos = platform.system() == "Darwin"
+        
+        # Tamaño de fuente base (se puede ajustar)
+        self.font_size_base = 12  # Tamaño base para textos normales
+        self.font_size_min = 8
+        self.font_size_max = 24
+        
+        # Configurar estilos para macOS
+        if self.is_macos:
+            self.configurar_estilos_macos()
         
         self.preguntas = {}  # {tema: [lista de preguntas]}
         self.respuestas = {}  # {tema: {num_pregunta: respuesta o lista}}
@@ -24,6 +37,200 @@ class ExamenApp:
         
         self.crear_pantalla_inicio()
     
+    def configurar_estilos_macos(self):
+        """Configurar estilos ttk para macOS con colores personalizados"""
+        style = ttk.Style()
+        
+        # Usar tema 'clam' que permite más personalización de colores
+        style.theme_use('clam')
+        
+        # Estilo para botón azul (Seleccionar Carpeta, Siguiente)
+        style.configure(
+            "Blue.TButton",
+            background="#3498db",
+            foreground="white",
+            font=("Arial", 10),
+            padding=(15, 5)
+        )
+        style.map("Blue.TButton",
+            background=[("active", "#2980b9"), ("pressed", "#2471a3")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón verde (Iniciar Examen, Finalizar)
+        style.configure(
+            "Green.TButton",
+            background="#27ae60",
+            foreground="white",
+            font=("Arial", 14, "bold"),
+            padding=(30, 10)
+        )
+        style.map("Green.TButton",
+            background=[("active", "#229954"), ("pressed", "#1e8449")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón verde normal (no bold)
+        style.configure(
+            "GreenNormal.TButton",
+            background="#27ae60",
+            foreground="white",
+            font=("Arial", 11),
+            padding=(20, 8)
+        )
+        style.map("GreenNormal.TButton",
+            background=[("active", "#229954"), ("pressed", "#1e8449")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón gris (Anterior)
+        style.configure(
+            "Gray.TButton",
+            background="#95a5a6",
+            foreground="white",
+            font=("Arial", 11),
+            padding=(20, 8)
+        )
+        style.map("Gray.TButton",
+            background=[("active", "#7f8c8d"), ("pressed", "#6c7a7d")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón morado (Ir a pregunta)
+        style.configure(
+            "Purple.TButton",
+            background="#9b59b6",
+            foreground="white",
+            font=("Arial", 10),
+            padding=(15, 5)
+        )
+        style.map("Purple.TButton",
+            background=[("active", "#8e44ad"), ("pressed", "#7d3c98")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón rojo (Cancelar, Volver)
+        style.configure(
+            "Red.TButton",
+            background="#e74c3c",
+            foreground="white",
+            font=("Arial", 11),
+            padding=(20, 8)
+        )
+        style.map("Red.TButton",
+            background=[("active", "#c0392b"), ("pressed", "#a93226")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para botón naranja
+        style.configure(
+            "Orange.TButton",
+            background="#e67e22",
+            foreground="white",
+            font=("Arial", 10),
+            padding=(15, 5)
+        )
+        style.map("Orange.TButton",
+            background=[("active", "#d35400"), ("pressed", "#ba4a00")],
+            foreground=[("active", "white"), ("pressed", "white")]
+        )
+        
+        # Estilo para Checkbutton en macOS
+        style.configure(
+            "Custom.TCheckbutton",
+            background="#f0f0f0",
+            foreground="#2c3e50",
+            font=("Arial", self.font_size_base)
+        )
+        
+        # Estilo para Radiobutton en macOS
+        style.configure(
+            "Custom.TRadiobutton",
+            background="white",
+            foreground="#2c3e50",
+            font=("Arial", self.font_size_base)
+        )
+    
+    def get_font(self, size_offset=0, bold=False):
+        """Obtener fuente con tamaño ajustado"""
+        size = self.font_size_base + size_offset
+        if bold:
+            return ("Arial", size, "bold")
+        return ("Arial", size)
+    
+    def aumentar_fuente(self):
+        """Aumentar el tamaño de la fuente"""
+        if self.font_size_base < self.font_size_max:
+            self.font_size_base += 2
+            self.actualizar_estilos()
+            self.refrescar_pantalla()
+    
+    def disminuir_fuente(self):
+        """Disminuir el tamaño de la fuente"""
+        if self.font_size_base > self.font_size_min:
+            self.font_size_base -= 2
+            self.actualizar_estilos()
+            self.refrescar_pantalla()
+    
+    def actualizar_estilos(self):
+        """Actualizar estilos con el nuevo tamaño de fuente"""
+        if self.is_macos:
+            style = ttk.Style()
+            
+            style.configure("Blue.TButton", font=("Arial", self.font_size_base - 2))
+            style.configure("Green.TButton", font=("Arial", self.font_size_base + 2, "bold"))
+            style.configure("GreenNormal.TButton", font=("Arial", self.font_size_base - 1))
+            style.configure("Gray.TButton", font=("Arial", self.font_size_base - 1))
+            style.configure("Purple.TButton", font=("Arial", self.font_size_base - 2))
+            style.configure("Red.TButton", font=("Arial", self.font_size_base - 1))
+            style.configure("Orange.TButton", font=("Arial", self.font_size_base - 2))
+            style.configure("Custom.TCheckbutton", font=("Arial", self.font_size_base))
+            style.configure("Custom.TRadiobutton", font=("Arial", self.font_size_base))
+    
+    def refrescar_pantalla(self):
+        """Refrescar la pantalla actual después de cambiar el tamaño de fuente"""
+        # Determinar qué pantalla mostrar según el estado actual
+        if hasattr(self, 'preguntas_examen') and self.preguntas_examen and hasattr(self, 'indice_actual'):
+            # Estamos en medio de un examen
+            if hasattr(self, 'mostrando_resultados') and self.mostrando_resultados:
+                pass  # No refrescar resultados automáticamente
+            else:
+                self.mostrar_pregunta()
+        else:
+            # Estamos en la pantalla de inicio
+            self.crear_pantalla_inicio()
+    
+    def crear_boton(self, parent, text, command, color="blue", **kwargs):
+        """Crear un botón compatible con macOS y Windows"""
+        if self.is_macos:
+            style_map = {
+                "blue": "Blue.TButton",
+                "green": "Green.TButton",
+                "green_normal": "GreenNormal.TButton",
+                "gray": "Gray.TButton",
+                "purple": "Purple.TButton",
+                "red": "Red.TButton",
+                "orange": "Orange.TButton"
+            }
+            style = style_map.get(color, "Blue.TButton")
+            btn = ttk.Button(parent, text=text, command=command, style=style)
+        else:
+            color_map = {
+                "blue": ("#3498db", "white", self.get_font(-2)),
+                "green": ("#27ae60", "white", self.get_font(2, bold=True)),
+                "green_normal": ("#27ae60", "white", self.get_font(-1)),
+                "gray": ("#95a5a6", "white", self.get_font(-1)),
+                "purple": ("#9b59b6", "white", self.get_font(-2)),
+                "red": ("#e74c3c", "white", self.get_font(-1)),
+                "orange": ("#e67e22", "white", self.get_font(-2))
+            }
+            bg, fg, font = color_map.get(color, ("#3498db", "white", self.get_font(-2)))
+            padx = kwargs.get('padx', 15)
+            pady = kwargs.get('pady', 5)
+            btn = tk.Button(parent, text=text, command=command, bg=bg, fg=fg, 
+                          font=font, padx=padx, pady=pady)
+        return btn
+    
     def crear_pantalla_inicio(self):
         """Pantalla inicial para seleccionar carpeta y configurar examen"""
         self.limpiar_pantalla()
@@ -31,11 +238,57 @@ class ExamenApp:
         frame_principal = tk.Frame(self.root, bg="#f0f0f0")
         frame_principal.pack(expand=True, fill="both", padx=20, pady=20)
         
+        # Frame superior con controles de fuente
+        frame_controles = tk.Frame(frame_principal, bg="#f0f0f0")
+        frame_controles.pack(fill="x", pady=(0, 10))
+        
+        tk.Label(
+            frame_controles,
+            text="Tamaño de texto:",
+            font=self.get_font(-2),
+            bg="#f0f0f0",
+            fg="#2c3e50"
+        ).pack(side="left")
+        
+        btn_menos = tk.Button(
+            frame_controles,
+            text=" − ",
+            command=self.disminuir_fuente,
+            font=self.get_font(0, bold=True),
+            bg="#ecf0f1",
+            fg="#2c3e50",
+            padx=8,
+            pady=2
+        )
+        btn_menos.pack(side="left", padx=5)
+        
+        self.label_tamano = tk.Label(
+            frame_controles,
+            text=f"{self.font_size_base}",
+            font=self.get_font(-2),
+            bg="#f0f0f0",
+            fg="#2c3e50",
+            width=3
+        )
+        self.label_tamano.pack(side="left")
+        
+        btn_mas = tk.Button(
+            frame_controles,
+            text=" + ",
+            command=self.aumentar_fuente,
+            font=self.get_font(0, bold=True),
+            bg="#ecf0f1",
+            fg="#2c3e50",
+            padx=8,
+            pady=2
+        )
+        btn_mas.pack(side="left", padx=5)
+        
         # Título
         titulo = tk.Label(
             frame_principal, 
             text="📚 Sistema de Exámenes CSI",
-            font=("Arial", 24, "bold"),
+            font=self.get_font(12, bold=True),
             bg="#f0f0f0",
             fg="#2c3e50"
         )
@@ -45,8 +298,9 @@ class ExamenApp:
         frame_carpeta = tk.LabelFrame(
             frame_principal, 
             text="1. Seleccionar carpeta con PDFs",
-            font=("Arial", 12),
+            font=self.get_font(0),
             bg="#f0f0f0",
+            fg="#2c3e50",
             padx=10,
             pady=10
         )
@@ -55,21 +309,17 @@ class ExamenApp:
         self.label_carpeta = tk.Label(
             frame_carpeta,
             text="No se ha seleccionado carpeta",
-            font=("Arial", 10),
+            font=self.get_font(-2),
             bg="#f0f0f0",
             fg="#7f8c8d"
         )
         self.label_carpeta.pack(side="left", padx=10)
         
-        btn_carpeta = tk.Button(
+        btn_carpeta = self.crear_boton(
             frame_carpeta,
             text="Seleccionar Carpeta",
             command=self.seleccionar_carpeta,
-            font=("Arial", 10),
-            bg="#3498db",
-            fg="white",
-            padx=15,
-            pady=5
+            color="blue"
         )
         btn_carpeta.pack(side="right", padx=10)
         
@@ -77,8 +327,9 @@ class ExamenApp:
         frame_config = tk.LabelFrame(
             frame_principal,
             text="2. Configuración del examen",
-            font=("Arial", 12),
+            font=self.get_font(0),
             bg="#f0f0f0",
+            fg="#2c3e50",
             padx=10,
             pady=10
         )
@@ -88,8 +339,9 @@ class ExamenApp:
         tk.Label(
             frame_config,
             text="Seleccionar temas:",
-            font=("Arial", 10),
-            bg="#f0f0f0"
+            font=self.get_font(-2),
+            bg="#f0f0f0",
+            fg="#2c3e50"
         ).pack(anchor="w")
         
         self.frame_temas = tk.Frame(frame_config, bg="#f0f0f0")
@@ -104,8 +356,9 @@ class ExamenApp:
         tk.Label(
             frame_num,
             text="Número de preguntas:",
-            font=("Arial", 10),
-            bg="#f0f0f0"
+            font=self.get_font(-2),
+            bg="#f0f0f0",
+            fg="#2c3e50"
         ).pack(side="left")
         
         self.spin_num_preguntas = tk.Spinbox(
@@ -113,7 +366,7 @@ class ExamenApp:
             from_=5,
             to=100,
             width=5,
-            font=("Arial", 10)
+            font=self.get_font(-2)
         )
         self.spin_num_preguntas.pack(side="left", padx=10)
         self.spin_num_preguntas.delete(0, "end")
@@ -121,43 +374,62 @@ class ExamenApp:
         
         # Checkbox para aleatorizar preguntas
         self.var_aleatorio = tk.BooleanVar(value=True)
-        tk.Checkbutton(
-            frame_config,
-            text="Aleatorizar orden de preguntas",
-            variable=self.var_aleatorio,
-            font=("Arial", 10),
-            bg="#f0f0f0"
-        ).pack(anchor="w")
+        if self.is_macos:
+            ttk.Checkbutton(
+                frame_config,
+                text="Aleatorizar orden de preguntas",
+                variable=self.var_aleatorio,
+                style="Custom.TCheckbutton"
+            ).pack(anchor="w")
+        else:
+            tk.Checkbutton(
+                frame_config,
+                text="Aleatorizar orden de preguntas",
+                variable=self.var_aleatorio,
+                font=self.get_font(-2),
+                bg="#f0f0f0",
+                fg="#2c3e50"
+            ).pack(anchor="w")
         
         # Checkbox para mezclar opciones
         self.var_mezclar_opciones = tk.BooleanVar(value=True)
-        tk.Checkbutton(
-            frame_config,
-            text="Mezclar orden de opciones (A, B, C, D)",
-            variable=self.var_mezclar_opciones,
-            font=("Arial", 10),
-            bg="#f0f0f0"
-        ).pack(anchor="w")
+        if self.is_macos:
+            ttk.Checkbutton(
+                frame_config,
+                text="Mezclar orden de opciones (A, B, C, D)",
+                variable=self.var_mezclar_opciones,
+                style="Custom.TCheckbutton"
+            ).pack(anchor="w")
+        else:
+            tk.Checkbutton(
+                frame_config,
+                text="Mezclar orden de opciones (A, B, C, D)",
+                variable=self.var_mezclar_opciones,
+                font=self.get_font(-2),
+                bg="#f0f0f0",
+                fg="#2c3e50"
+            ).pack(anchor="w")
         
         # Botón iniciar
-        self.btn_iniciar = tk.Button(
+        self.btn_iniciar = self.crear_boton(
             frame_principal,
             text="🚀 Iniciar Examen",
             command=self.iniciar_examen,
-            font=("Arial", 14, "bold"),
-            bg="#27ae60",
-            fg="white",
+            color="green",
             padx=30,
-            pady=10,
-            state="disabled"
+            pady=10
         )
+        if self.is_macos:
+            self.btn_iniciar.state(['disabled'])
+        else:
+            self.btn_iniciar.config(state="disabled")
         self.btn_iniciar.pack(pady=30)
         
         # Info
         self.label_info = tk.Label(
             frame_principal,
             text="",
-            font=("Arial", 10),
+            font=self.get_font(-2),
             bg="#f0f0f0",
             fg="#7f8c8d"
         )
@@ -215,13 +487,22 @@ class ExamenApp:
             self.vars_temas[tema] = var
             
             num_pregs = len(self.preguntas.get(tema, []))
-            cb = tk.Checkbutton(
-                self.frame_temas,
-                text=f"Tema {tema} ({num_pregs} preguntas)",
-                variable=var,
-                font=("Arial", 10),
-                bg="#f0f0f0"
-            )
+            if self.is_macos:
+                cb = ttk.Checkbutton(
+                    self.frame_temas,
+                    text=f"Tema {tema} ({num_pregs} preguntas)",
+                    variable=var,
+                    style="Custom.TCheckbutton"
+                )
+            else:
+                cb = tk.Checkbutton(
+                    self.frame_temas,
+                    text=f"Tema {tema} ({num_pregs} preguntas)",
+                    variable=var,
+                    font=self.get_font(-2),
+                    bg="#f0f0f0",
+                    fg="#2c3e50"
+                )
             cb.grid(row=i//3, column=i%3, sticky="w", padx=10)
         
         # Actualizar info
@@ -231,7 +512,10 @@ class ExamenApp:
         )
         
         if temas_encontrados:
-            self.btn_iniciar.config(state="normal")
+            if self.is_macos:
+                self.btn_iniciar.state(['!disabled'])
+            else:
+                self.btn_iniciar.config(state="normal")
         else:
             messagebox.showwarning(
                 "Aviso",
@@ -488,6 +772,51 @@ class ExamenApp:
         frame_principal = tk.Frame(self.root, bg="#f0f0f0")
         frame_principal.pack(expand=True, fill="both", padx=20, pady=10)
         
+        # Frame superior con controles de fuente
+        frame_controles = tk.Frame(frame_principal, bg="#f0f0f0")
+        frame_controles.pack(fill="x", pady=(0, 5))
+        
+        tk.Label(
+            frame_controles,
+            text="Tamaño:",
+            font=self.get_font(-4),
+            bg="#f0f0f0",
+            fg="#2c3e50"
+        ).pack(side="left")
+        
+        btn_menos = tk.Button(
+            frame_controles,
+            text=" − ",
+            command=self.disminuir_fuente,
+            font=self.get_font(-2, bold=True),
+            bg="#ecf0f1",
+            fg="#2c3e50",
+            padx=5,
+            pady=1
+        )
+        btn_menos.pack(side="left", padx=3)
+        
+        tk.Label(
+            frame_controles,
+            text=f"{self.font_size_base}",
+            font=self.get_font(-4),
+            bg="#f0f0f0",
+            fg="#2c3e50",
+            width=2
+        ).pack(side="left")
+        
+        btn_mas = tk.Button(
+            frame_controles,
+            text=" + ",
+            command=self.aumentar_fuente,
+            font=self.get_font(-2, bold=True),
+            bg="#ecf0f1",
+            fg="#2c3e50",
+            padx=5,
+            pady=1
+        )
+        btn_mas.pack(side="left", padx=3)
+        
         # Barra de progreso
         frame_progreso = tk.Frame(frame_principal, bg="#f0f0f0")
         frame_progreso.pack(fill="x", pady=5)
@@ -496,7 +825,7 @@ class ExamenApp:
         tk.Label(
             frame_progreso,
             text=progreso_texto,
-            font=("Arial", 10),
+            font=self.get_font(-2),
             bg="#f0f0f0",
             fg="#7f8c8d"
         ).pack(side="left")
@@ -513,7 +842,7 @@ class ExamenApp:
         frame_pregunta = tk.LabelFrame(
             frame_principal,
             text=f"Pregunta {pregunta['numero']}",
-            font=("Arial", 12, "bold"),
+            font=self.get_font(0, bold=True),
             bg="white",
             padx=15,
             pady=15
@@ -533,51 +862,43 @@ class ExamenApp:
         frame_botones.pack(fill="x", pady=10)
         
         if self.indice_actual > 0:
-            btn_anterior = tk.Button(
+            btn_anterior = self.crear_boton(
                 frame_botones,
                 text="← Anterior",
                 command=self.pregunta_anterior,
-                font=("Arial", 11),
-                bg="#95a5a6",
-                fg="white",
+                color="gray",
                 padx=20,
                 pady=8
             )
             btn_anterior.pack(side="left")
         
         # Botón para ir a cualquier pregunta
-        btn_ir = tk.Button(
+        btn_ir = self.crear_boton(
             frame_botones,
             text="Ir a pregunta...",
             command=self.mostrar_navegacion,
-            font=("Arial", 10),
-            bg="#9b59b6",
-            fg="white",
+            color="purple",
             padx=15,
             pady=5
         )
         btn_ir.pack(side="left", padx=20)
         
         if self.indice_actual < len(self.preguntas_examen) - 1:
-            btn_siguiente = tk.Button(
+            btn_siguiente = self.crear_boton(
                 frame_botones,
                 text="Siguiente →",
                 command=self.pregunta_siguiente,
-                font=("Arial", 11),
-                bg="#3498db",
-                fg="white",
+                color="blue",
                 padx=20,
                 pady=8
             )
             btn_siguiente.pack(side="right")
         else:
-            btn_finalizar = tk.Button(
+            btn_finalizar = self.crear_boton(
                 frame_botones,
                 text="✓ Finalizar Examen",
                 command=self.finalizar_examen,
-                font=("Arial", 11, "bold"),
-                bg="#27ae60",
-                fg="white",
+                color="green_normal",
                 padx=20,
                 pady=8
             )
@@ -605,8 +926,9 @@ class ExamenApp:
         text_widget = tk.Text(
             frame_texto, 
             wrap="word", 
-            font=("Arial", 11),
+            font=self.get_font(-1),
             bg="white",
+            fg="#2c3e50",
             relief="flat",
             height=15,
             cursor="arrow"
@@ -635,7 +957,7 @@ class ExamenApp:
                     text_widget,
                     textvariable=var,
                     values=opciones_con_blanco,
-                    font=("Arial", 10),
+                    font=self.get_font(-2),
                     state="readonly",
                     width=max(len(max(opciones_hueco, key=len)) + 2, 15)
                 )
@@ -656,8 +978,9 @@ class ExamenApp:
         tk.Label(
             frame,
             text=pregunta['texto'],
-            font=("Arial", 12),
+            font=self.get_font(0),
             bg="white",
+            fg="#2c3e50",
             wraplength=900,
             justify="left"
         ).pack(anchor="w", pady=10)
@@ -677,41 +1000,60 @@ class ExamenApp:
             frame_opcion = tk.Frame(frame_opciones, bg="white", pady=3)
             frame_opcion.pack(fill="x")
             
-            rb = tk.Radiobutton(
-                frame_opcion,
-                text=f"{opcion['letra']})  {opcion['texto']}",
-                variable=var_respuesta,
-                value=opcion['letra'],
-                font=("Arial", 11),
-                bg="white",
-                activebackground="#e8f4f8",
-                anchor="w",
-                padx=10,
-                pady=8,
-                indicatoron=1,
-                selectcolor="#d5f4e6"
-            )
+            if self.is_macos:
+                rb = ttk.Radiobutton(
+                    frame_opcion,
+                    text=f"{opcion['letra']})  {opcion['texto']}",
+                    variable=var_respuesta,
+                    value=opcion['letra'],
+                    style="Custom.TRadiobutton"
+                )
+            else:
+                rb = tk.Radiobutton(
+                    frame_opcion,
+                    text=f"{opcion['letra']})  {opcion['texto']}",
+                    variable=var_respuesta,
+                    value=opcion['letra'],
+                    font=self.get_font(-1),
+                    bg="white",
+                    fg="#2c3e50",
+                    activebackground="#e8f4f8",
+                    anchor="w",
+                    padx=10,
+                    pady=8,
+                    indicatoron=1,
+                    selectcolor="#d5f4e6"
+                )
             rb.pack(fill="x")
         
         # Opción para dejar en blanco
         frame_blanco = tk.Frame(frame_opciones, bg="white", pady=3)
         frame_blanco.pack(fill="x")
         
-        rb_blanco = tk.Radiobutton(
-            frame_blanco,
-            text="     Dejar en blanco",
-            variable=var_respuesta,
-            value="",
-            font=("Arial", 11, "italic"),
-            bg="white",
-            fg="#7f8c8d",
-            activebackground="#f8f8f8",
-            anchor="w",
-            padx=10,
-            pady=8,
-            indicatoron=1,
-            selectcolor="#f0f0f0"
-        )
+        if self.is_macos:
+            rb_blanco = ttk.Radiobutton(
+                frame_blanco,
+                text="     Dejar en blanco",
+                variable=var_respuesta,
+                value="",
+                style="Custom.TRadiobutton"
+            )
+        else:
+            rb_blanco = tk.Radiobutton(
+                frame_blanco,
+                text="     Dejar en blanco",
+                variable=var_respuesta,
+                value="",
+                font=self.get_font(-1),
+                bg="white",
+                fg="#7f8c8d",
+                activebackground="#f8f8f8",
+                anchor="w",
+                padx=10,
+                pady=8,
+                indicatoron=1,
+                selectcolor="#f0f0f0"
+            )
         rb_blanco.pack(fill="x")
         
         self.widgets_respuesta = [var_respuesta]
@@ -722,8 +1064,9 @@ class ExamenApp:
         tk.Label(
             frame,
             text=pregunta['texto'],
-            font=("Arial", 12),
+            font=self.get_font(0),
             bg="white",
+            fg="#2c3e50",
             wraplength=900,
             justify="left"
         ).pack(anchor="w", pady=10)
@@ -731,8 +1074,9 @@ class ExamenApp:
         tk.Label(
             frame,
             text="Tu respuesta:",
-            font=("Arial", 10),
-            bg="white"
+            font=self.get_font(-2),
+            bg="white",
+            fg="#2c3e50"
         ).pack(anchor="w", pady=5)
         
         var_respuesta = tk.StringVar()
@@ -745,7 +1089,7 @@ class ExamenApp:
         entry = tk.Entry(
             frame,
             textvariable=var_respuesta,
-            font=("Arial", 12),
+            font=self.get_font(0),
             width=50
         )
         entry.pack(anchor="w", pady=5)
@@ -793,8 +1137,9 @@ class ExamenApp:
         tk.Label(
             ventana,
             text="Selecciona una pregunta:",
-            font=("Arial", 12),
-            bg="#f0f0f0"
+            font=self.get_font(0),
+            bg="#f0f0f0",
+            fg="#2c3e50"
         ).pack(pady=10)
         
         # Frame con scroll para las preguntas
@@ -820,16 +1165,24 @@ class ExamenApp:
             respondida = "✓" if i in self.respuestas_usuario else "○"
             color = "#27ae60" if i in self.respuestas_usuario else "#95a5a6"
             
-            btn = tk.Button(
-                frame_preguntas,
-                text=f"{respondida} Pregunta {i+1} (Tema {pregunta['tema']}, #{pregunta['numero']})",
-                command=lambda idx=i, v=ventana: self.ir_a_pregunta(idx, v),
-                font=("Arial", 10),
-                bg="white",
-                fg=color,
-                anchor="w",
-                width=45
-            )
+            if self.is_macos:
+                btn = ttk.Button(
+                    frame_preguntas,
+                    text=f"{respondida} Pregunta {i+1} (Tema {pregunta['tema']}, #{pregunta['numero']})",
+                    command=lambda idx=i, v=ventana: self.ir_a_pregunta(idx, v),
+                    width=45
+                )
+            else:
+                btn = tk.Button(
+                    frame_preguntas,
+                    text=f"{respondida} Pregunta {i+1} (Tema {pregunta['tema']}, #{pregunta['numero']})",
+                    command=lambda idx=i, v=ventana: self.ir_a_pregunta(idx, v),
+                    font=self.get_font(-2),
+                    bg="white",
+                    fg=color,
+                    anchor="w",
+                    width=45
+                )
             btn.pack(fill="x", pady=2)
     
     def ir_a_pregunta(self, indice, ventana):
@@ -953,7 +1306,7 @@ class ExamenApp:
         tk.Label(
             frame_principal,
             text="📊 Resultados del Examen",
-            font=("Arial", 20, "bold"),
+            font=self.get_font(8, bold=True),
             bg="#f0f0f0",
             fg="#2c3e50"
         ).pack(pady=10)
@@ -977,7 +1330,7 @@ class ExamenApp:
         tk.Label(
             frame_puntuacion,
             text=f"{nota_sobre_10:.2f} / 10",
-            font=("Arial", 48, "bold"),
+            font=self.get_font(36, bold=True),
             bg="white",
             fg=color_nota
         ).pack()
@@ -986,7 +1339,7 @@ class ExamenApp:
         tk.Label(
             frame_puntuacion,
             text=f"Puntos obtenidos: {puntos:.1f} de {nota_maxima:.0f} posibles",
-            font=("Arial", 11),
+            font=self.get_font(-1),
             bg="white",
             fg="#2c3e50"
         ).pack(pady=5)
@@ -994,7 +1347,7 @@ class ExamenApp:
         tk.Label(
             frame_puntuacion,
             text=f"(+1 por acierto, -0.5 por fallo)",
-            font=("Arial", 9, "italic"),
+            font=self.get_font(-3),
             bg="white",
             fg="#95a5a6"
         ).pack()
@@ -1002,7 +1355,7 @@ class ExamenApp:
         tk.Label(
             frame_puntuacion,
             text=f"✓ Correctas: {correctas} (+{correctas} pts)  |  ✗ Incorrectas: {incorrectas} (-{incorrectas * 0.5:.1f} pts)  |  ○ Sin responder: {sin_responder}",
-            font=("Arial", 12),
+            font=self.get_font(0),
             bg="white",
             fg="#7f8c8d"
         ).pack(pady=10)
@@ -1011,8 +1364,9 @@ class ExamenApp:
         frame_detalle = tk.LabelFrame(
             frame_principal,
             text="Detalle de respuestas",
-            font=("Arial", 12),
-            bg="#f0f0f0"
+            font=self.get_font(0),
+            bg="#f0f0f0",
+            fg="#2c3e50"
         )
         frame_detalle.pack(fill="both", expand=True, pady=10)
         
@@ -1060,7 +1414,7 @@ class ExamenApp:
             tk.Label(
                 frame_item,
                 text=texto,
-                font=("Arial", 10),
+                font=self.get_font(-2),
                 bg="white",
                 fg=color,
                 anchor="w"
@@ -1070,49 +1424,45 @@ class ExamenApp:
         frame_botones = tk.Frame(frame_principal, bg="#f0f0f0")
         frame_botones.pack(fill="x", pady=10)
         
-        tk.Button(
+        btn_nuevo = self.crear_boton(
             frame_botones,
             text="🔄 Nuevo Examen",
             command=self.crear_pantalla_inicio,
-            font=("Arial", 12),
-            bg="#3498db",
-            fg="white",
+            color="blue",
             padx=20,
             pady=10
-        ).pack(side="left", padx=5)
+        )
+        btn_nuevo.pack(side="left", padx=5)
         
-        tk.Button(
+        btn_revisar = self.crear_boton(
             frame_botones,
             text="📋 Revisar Respuestas",
             command=lambda: self.revisar_respuestas(resultados_detalle),
-            font=("Arial", 12),
-            bg="#9b59b6",
-            fg="white",
+            color="purple",
             padx=20,
             pady=10
-        ).pack(side="left", padx=5)
+        )
+        btn_revisar.pack(side="left", padx=5)
         
-        tk.Button(
+        btn_guardar = self.crear_boton(
             frame_botones,
             text="💾 Guardar Reporte",
             command=lambda: self.guardar_reporte(resultados_detalle, correctas, incorrectas, sin_responder, nota_sobre_10, puntos),
-            font=("Arial", 12),
-            bg="#f39c12",
-            fg="white",
+            color="orange",
             padx=20,
             pady=10
-        ).pack(side="left", padx=5)
+        )
+        btn_guardar.pack(side="left", padx=5)
         
-        tk.Button(
+        btn_salir = self.crear_boton(
             frame_botones,
             text="❌ Salir",
             command=self.root.quit,
-            font=("Arial", 12),
-            bg="#e74c3c",
-            fg="white",
+            color="red",
             padx=20,
             pady=10
-        ).pack(side="right", padx=5)
+        )
+        btn_salir.pack(side="right", padx=5)
     
     def revisar_respuestas(self, resultados):
         """Revisar las respuestas detalladamente"""
@@ -1153,7 +1503,7 @@ class ExamenApp:
             frame_pregunta = tk.LabelFrame(
                 frame_scroll,
                 text=f"Pregunta {i+1} - Tema {pregunta['tema']} (#{pregunta['numero']})",
-                font=("Arial", 10, "bold"),
+                font=self.get_font(-2, bold=True),
                 bg=color_bg,
                 fg=color_borde,
                 padx=10,
@@ -1164,8 +1514,9 @@ class ExamenApp:
             tk.Label(
                 frame_pregunta,
                 text=pregunta['texto'],
-                font=("Arial", 10),
+                font=self.get_font(-2),
                 bg=color_bg,
+                fg="#2c3e50",
                 wraplength=800,
                 justify="left"
             ).pack(anchor="w")
@@ -1195,7 +1546,7 @@ class ExamenApp:
                     tk.Label(
                         frame_pregunta,
                         text=texto,
-                        font=("Arial", 10),
+                        font=self.get_font(-2),
                         bg=color_bg,
                         fg=fg,
                         wraplength=750,
@@ -1214,7 +1565,7 @@ class ExamenApp:
             tk.Label(
                 frame_pregunta,
                 text=f"Tu respuesta: {resp_usuario or 'Sin responder'} | Correcta: {resp_correcta}",
-                font=("Arial", 9, "italic"),
+                font=self.get_font(-3),
                 bg=color_bg,
                 fg="#7f8c8d"
             ).pack(anchor="w", pady=5)
